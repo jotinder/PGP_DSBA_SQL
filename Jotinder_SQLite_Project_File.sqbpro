@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="E:/Jotinder/PGP_DSBA/Code_DataSet/Module 9 - SQL/Project/New Orders.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1901"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,7:mainADDRESS"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="ADDRESS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="90"/><column index="2" value="300"/><column index="3" value="261"/><column index="4" value="111"/><column index="5" value="98"/><column index="6" value="62"/><column index="7" value="66"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="CARTON" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="81"/><column index="2" value="40"/><column index="3" value="51"/><column index="4" value="53"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="ONLINE_CUSTOMER" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="1" mode="1"/></sort><column_widths><column index="1" value="97"/><column index="2" value="125"/><column index="3" value="126"/><column index="4" value="176"/><column index="5" value="124"/><column index="6" value="90"/><column index="7" value="187"/><column index="8" value="151"/><column index="9" value="131"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="ORDER_HEADER" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="73"/><column index="2" value="97"/><column index="3" value="92"/><column index="4" value="107"/><column index="5" value="112"/><column index="6" value="109"/><column index="7" value="163"/><column index="8" value="84"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="ORDER_ITEMS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="2" mode="0"/></sort><column_widths><column index="1" value="73"/><column index="2" value="88"/><column index="3" value="137"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="PRODUCT" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="5" mode="0"/></sort><column_widths><column index="1" value="88"/><column index="2" value="300"/><column index="3" value="156"/><column index="4" value="111"/><column index="5" value="186"/><column index="6" value="40"/><column index="7" value="51"/><column index="8" value="53"/><column index="9" value="57"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="PRODUCT_CLASS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="2" mode="0"/></sort><column_widths><column index="1" value="156"/><column index="2" value="155"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">----------------------------------------QUESTION 1----------------------------------------
+--Write a query to Display the product details (product_class_code, product_id, product_desc, product_price,) as per the following criteria and sort them
+--in descending order of category: a. If the category is 2050, increase the price by 2000 b. If the category is 2051, increase the price by 500 c. If the category
+--is 2052, increase the price by 600. Hint: Use case statement. no permanent change in table required. (60 ROWS) [NOTE: PRODUCT TABLE]
+
+select PRODUCT_CLASS_CODE, PRODUCT_ID, PRODUCT_DESC,PRODUCT_PRICE,
+CASE
+WHEN PRODUCT_CLASS_CODE = 2050 THEN PRODUCT_PRICE+2000
+WHEN PRODUCT_CLASS_CODE = 2051 THEN PRODUCT_PRICE+500
+WHEN PRODUCT_CLASS_CODE = 2052 THEN PRODUCT_PRICE+600
+else PRODUCT_PRICE
+END as &quot;UPDATED_PRICE&quot;
+from PRODUCT
+order by PRODUCT_CLASS_CODE desc;
+----------------------------------------QUESTION 2----------------------------------------
+--Write a query to display (product_class_desc, product_id, product_desc, product_quantity_avail ) and Show inventory status of products as below as per their available quantity:
+-- a. For Electronics and Computer categories, if available quantity is &lt;= 10, show 'Low stock', 11 &lt;= qty &lt;= 30, show 'In stock', &gt;= 31, show 'Enough stock'
+-- b. For Stationery and Clothes categories, if qty &lt;= 20, show 'Low stock', 21 &lt;= qty &lt;= 80, show 'In stock', &gt;= 81, show 'Enough stock' 
+-- c. Rest of the categories, if qty &lt;= 15 – 'Low Stock', 16 &lt;= qty &lt;= 50 – 'In Stock', &gt;= 51 – 'Enough stock' 
+ --For all categories, if available quantity is 0, show 'Out of stock'. Hint: Use case statement. (60 ROWS) [NOTE: TABLES TO BE USED – product, product_class]
+
+select pc.PRODUCT_CLASS_DESC,p.PRODUCT_ID, p.PRODUCT_DESC,p.PRODUCT_QUANTITY_AVAIL,
+CASE
+	WHEN pc.PRODUCT_CLASS_DESC in('Electronics','Computer') THEN
+		CASE
+			WHEN p.PRODUCT_QUANTITY_AVAIL = 0 THEN &quot;Out of Stock&quot;
+			WHEN p.PRODUCT_QUANTITY_AVAIL &lt;=10 THEN &quot;Low Stock&quot;
+			WHEN p.PRODUCT_QUANTITY_AVAIL &gt;=11 and p.PRODUCT_QUANTITY_AVAIL &lt;=30 THEN &quot;In Stock&quot;
+			WHEN p.PRODUCT_QUANTITY_AVAIL &gt;=31 THEN &quot;Enough Stock&quot;
+		END
+	WHEN pc.PRODUCT_CLASS_DESC in ('Stationery','Clothes') THEN
+		CASE
+			WHEN p.PRODUCT_QUANTITY_AVAIL = 0 THEN &quot;Out of Stock&quot;
+			WHEN p.PRODUCT_QUANTITY_AVAIL &lt;=20 THEN &quot;Low Stock&quot;
+			WHEN p.PRODUCT_QUANTITY_AVAIL &gt;=21 and p.PRODUCT_QUANTITY_AVAIL &lt;=80 THEN &quot;In Stock&quot;
+			WHEN p.PRODUCT_QUANTITY_AVAIL &gt;=81 THEN &quot;Enough Stock&quot;
+		END
+	WHEN pc.PRODUCT_CLASS_DESC not in ('Electronics','Computer','Stationery','Clothes') THEN
+		CASE
+			WHEN p.PRODUCT_QUANTITY_AVAIL = 0 THEN &quot;Out of Stock&quot;
+			WHEN p.PRODUCT_QUANTITY_AVAIL &lt;=15 THEN &quot;Low Stock&quot;
+			WHEN p.PRODUCT_QUANTITY_AVAIL &gt;=16 and p.PRODUCT_QUANTITY_AVAIL &lt;=50 THEN &quot;In Stock&quot;
+			WHEN p.PRODUCT_QUANTITY_AVAIL &gt;=51 THEN &quot;Enough Stock&quot;
+		END
+END as &quot;INVENTORY_STATUS&quot;
+from PRODUCT p
+INNER JOIN PRODUCT_CLASS pc
+on p.PRODUCT_CLASS_CODE = pc.PRODUCT_CLASS_CODE;
+
+----------------------------------------QUESTION 3----------------------------------------
+--Write a query to Show the count of cities in all countries other than USA &amp; MALAYSIA, with more than 1 city, in the descending order of CITIES. (2 rows) 
+--[NOTE: ADDRESS TABLE, Do not use Distinct]
+
+SELECT COUNTRY,count(CITY) as COUNT_OF_CITIES from ADDRESS
+where COUNTRY not in ('USA','Malaysia')
+group by COUNTRY
+HAVING count(CITY) &gt; 1
+order by count(CITY) desc;
+
+----------------------------------------QUESTION 4----------------------------------------
+--Write a query to display the customer_id,customer full name ,city,pincode,and order details (order id,order date, product class desc, product desc, 
+--subtotal(product_quantity * product_price)) for orders shipped to cities whose pin codes do not have any 0s in them. Sort the output on customer name,
+--order date and subtotal. (52 ROWS) [NOTE: TABLE TO BE USED - online_customer, address, order_header, order_items, product, product_class]
+
+SELECT oh.CUSTOMER_ID , oc.CUSTOMER_FNAME || &quot; &quot; || oc.CUSTOMER_LNAME as CUSTOMER_FULL_NAME,
+addr.CITY, addr.PINCODE,oh.ORDER_ID ,oh.ORDER_DATE ,pc.PRODUCT_CLASS_DESC,prd.PRODUCT_DESC,
+oi.PRODUCT_QUANTITY*prd.PRODUCT_PRICE as SUBTOTAL
+from ONLINE_CUSTOMER oc
+INNER JOIN ADDRESS addr
+on oc.ADDRESS_ID = addr.ADDRESS_ID
+INNER JOIN ORDER_HEADER oh
+on oc.CUSTOMER_ID = oh.CUSTOMER_ID
+INNER JOIN ORDER_ITEMS oi
+on oh.ORDER_ID = oi.ORDER_ID
+INNER JOIN PRODUCT prd
+on oi.PRODUCT_ID = prd.PRODUCT_ID
+INNER JOIN PRODUCT_CLASS pc
+on prd.PRODUCT_CLASS_CODE = pc.PRODUCT_CLASS_CODE
+WHERE addr.PINCODE not like &quot;%0%&quot; and 
+oh.ORDER_STATUS='Shipped'
+ORDER BY CUSTOMER_FULL_NAME, oh.ORDER_DATE, SUBTOTAL;
+
+
+
+----------------------------------------QUESTION 5----------------------------------------
+--Write a Query to display product id,product description,totalquantity(sum(product quantity) for an item which has been bought maximum no. of times
+-- (Quantity Wise) along with product id 201. (USE SUB-QUERY) (1 ROW) [NOTE: ORDER_ITEMS TABLE, PRODUCT TABLE]
+
+SELECT prd.PRODUCT_ID,prd.PRODUCT_DESC,sum(oi.PRODUCT_QUANTITY) as QUANTITY
+from PRODUCT prd
+INNER JOIN ORDER_ITEMS oi
+on prd.PRODUCT_ID = oi.PRODUCT_ID
+where prd.PRODUCT_ID in (
+	SELECT oi.PRODUCT_ID from ORDER_ITEMS oi where oi.ORDER_ID in (
+		select oi.ORDER_ID from ORDER_ITEMS oi where oi.PRODUCT_ID=201)
+	group by oi.PRODUCT_ID order by sum(PRODUCT_QUANTITY) desc limit 1)
+and oi.ORDER_ID in (
+	select oi.ORDER_ID from ORDER_ITEMS oi where oi.PRODUCT_ID=201);
+
+----------------------------------------QUESTION 6----------------------------------------
+--Write a query to display the customer_id,customer name, email and order details (order id, product desc,product qty, subtotal(product_quantity * product_price))
+--for all customers even if they have not ordered any item.(225 ROWS) [NOTE: TABLE TO BE USED - online_customer, order_header, order_items, product]
+
+select oc.CUSTOMER_ID ,oc.CUSTOMER_FNAME || ' ' ||  oc.CUSTOMER_LNAME as CUSTOMER_NAME, oc.CUSTOMER_EMAIL as EMAIL,
+oh.ORDER_ID , prd.PRODUCT_DESC ,oi.PRODUCT_QUANTITY ,oi.PRODUCT_QUANTITY * prd.PRODUCT_PRICE as SUBTOTAL
+from ONLINE_CUSTOMER oc
+LEFT JOIN ORDER_HEADER oh
+on oc.CUSTOMER_ID = oh.CUSTOMER_ID
+LEFT JOIN ORDER_ITEMS oi
+on oh.ORDER_ID = oi.ORDER_ID
+LEFT JOIN PRODUCT prd
+on prd.PRODUCT_ID = oi.PRODUCT_ID;</sql><current_tab id="0"/></tab_sql></sqlb_project>
